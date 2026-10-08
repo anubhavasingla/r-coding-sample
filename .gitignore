@@ -1,0 +1,6 @@
+.DS_Store
+.Rhistory
+.RData
+.Rproj.user/
+# Figures produced by the script
+figure*.pdf
