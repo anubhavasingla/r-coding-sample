@@ -3,4 +3,4 @@
 .RData
 .Rproj.user/
 # Figures produced by the script
-figure*.pdf
+03-output/figure*.pdf

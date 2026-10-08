@@ -5,12 +5,13 @@
 # Author: Anubhava Singla
 # Date: April 2026
 #
-# This script accompanies the written analysis. It reads from the current
-# directory and produces three figures as PDF files.
+# This script accompanies the written analysis. Run it with the working
+# directory set to 01-code/. It reads inputs from 02-data/ and writes three
+# figures as PDF files to 03-output/.
 #
 # Required packages: tidyverse, ggplot2, zoo, sf, terra, rnaturalearth,
 #                    rnaturalearthdata
-# Required data files (place in current directory):
+# Required data files (in 02-data/):
 #   - WomanData.csv (Nigeria DHS women's birth history)
 #   - Locations.csv (GPS coordinates for survey clusters)
 #   - wc2.1_10m_tavg_06.tif (WorldClim June temperature raster)
@@ -18,11 +19,15 @@
 
 library(tidyverse)
 
+data_dir   <- file.path("..", "02-data")
+output_dir <- file.path("..", "03-output")
+dir.create(output_dir, showWarnings = FALSE)
+
 # ==============================================================================
 # 1. Load and reshape birth history data
 # ==============================================================================
 
-women <- read_csv("WomanData.csv", show_col_types = FALSE)
+women <- read_csv(file.path(data_dir, "WomanData.csv"), show_col_types = FALSE)
 cat("Women in original data:", nrow(women), "\n")
 
 # The birth history is in wide format: each variable (b5, b7, bord, etc.)
@@ -129,7 +134,7 @@ cat("\nClusters:", nrow(clusters), "\n")
 
 library(ggplot2)
 
-pdf("figure1.pdf", width = 7, height = 5)
+pdf(file.path(output_dir, "figure1.pdf"), width = 7, height = 5)
 ggplot(clusters, aes(x = avg_wealth, y = avg_imr)) +
   geom_point(alpha = 0.5, size = 1.5) +
   labs(
@@ -147,7 +152,7 @@ dev.off()
 library(sf)
 library(rnaturalearth)
 
-locations <- read_csv("Locations.csv", show_col_types = FALSE)
+locations <- read_csv(file.path(data_dir, "Locations.csv"), show_col_types = FALSE)
 
 cluster_map <- clusters %>%
   inner_join(locations, by = "v001")
@@ -155,7 +160,7 @@ cluster_map <- clusters %>%
 nigeria <- ne_countries(scale = "medium", country = "Nigeria", returnclass = "sf")
 cluster_sf <- st_as_sf(cluster_map, coords = c("lon", "lat"), crs = 4326)
 
-pdf("figure2.pdf", width = 7, height = 5)
+pdf(file.path(output_dir, "figure2.pdf"), width = 7, height = 5)
 ggplot() +
   geom_sf(data = nigeria, fill = "grey95", color = "black") +
   geom_sf(data = cluster_sf, aes(color = avg_imr), size = 1.5, alpha = 0.7) +
@@ -175,8 +180,8 @@ library(terra)
 
 # WorldClim 10-minute average temperature, June layer.
 # Download from https://www.worldclim.org/data/worldclim21.html
-# and place the .tif file in the current directory.
-june_temp <- rast("wc2.1_10m_tavg_06.tif")
+# and place the .tif file in 02-data/.
+june_temp <- rast(file.path(data_dir, "wc2.1_10m_tavg_06.tif"))
 
 # Convert cluster coordinates to spatial vector and extract temperature
 cluster_points <- vect(cluster_map, geom = c("lon", "lat"), crs = "EPSG:4326")
@@ -188,7 +193,7 @@ cat("\nClusters with temperature data:", nrow(temp_data), "\n")
 temp_reg <- lm(avg_imr ~ june_temp, data = temp_data)
 summary(temp_reg)
 
-pdf("figure3.pdf", width = 7, height = 5)
+pdf(file.path(output_dir, "figure3.pdf"), width = 7, height = 5)
 ggplot(temp_data, aes(x = june_temp, y = avg_imr)) +
   geom_point(alpha = 0.5, size = 1.5) +
   geom_smooth(method = "lm", se = TRUE, color = "blue") +

@@ -7,27 +7,34 @@ An R analysis of Nigeria Demographic and Health Survey (DHS) birth history data.
 3. Maps cluster-level mortality across Nigeria.
 4. Links cluster GPS coordinates to WorldClim June temperatures and finds higher infant mortality in hotter areas.
 
-The write-up is in [R_WorkSample_Singla.pdf](R_WorkSample_Singla.pdf).
+The write-up is in [04-writeup/R_WorkSample_Singla.pdf](04-writeup/R_WorkSample_Singla.pdf).
 
-## Files
+## Project structure
 
-| File | What it is |
-| --- | --- |
-| `Singla_code.R` | The analysis script; reproduces every number and figure in the write-up |
-| `WomanData.csv` | Nigeria DHS women's birth history records (6,344 women) |
-| `Locations.csv` | GPS coordinates for the 239 survey clusters |
-| `wc2.1_10m_tavg_06.tif` | WorldClim 2.1 average June temperature, 10-minute resolution |
-| `R_WorkSample_Singla.pdf` | Written analysis |
+```
+├── 01-code/
+│   └── Singla_code.R            ← Run this file; reproduces every number and figure
+├── 02-data/
+│   ├── WomanData.csv            ← Nigeria DHS women's birth history (6,344 women)
+│   ├── Locations.csv            ← GPS coordinates for the 239 survey clusters
+│   └── wc2.1_10m_tavg_06.tif    ← WorldClim 2.1 June temperature, 10-minute resolution
+├── 03-output/                   ← Figures produced by the script
+└── 04-writeup/
+    └── R_WorkSample_Singla.pdf  ← Written analysis
+```
 
 ## How to run
 
-Open R in this folder and run:
+Set the working directory to `01-code/` and run the script:
 
 ```r
+setwd("path/to/r-coding-sample/01-code")
 source("Singla_code.R")
 ```
 
-The script uses no hard-coded paths. It prints summary statistics to the console and saves three figures as `figure1.pdf`, `figure2.pdf` and `figure3.pdf`.
+Or from a terminal, inside `01-code/`: `Rscript Singla_code.R`
+
+The script reads from `02-data/`, prints summary statistics to the console, and saves `figure1.pdf`, `figure2.pdf` and `figure3.pdf` to `03-output/`.
 
 ## Requirements
 
